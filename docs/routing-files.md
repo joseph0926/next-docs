@@ -1,11 +1,11 @@
 ## app router에서 예약어 파일들
 
-### 1. layout.ts
+### 1. layout.tsx
 
 #### layout이란?
 
 - layout 파일은 해당 경로(폴더)에 공유되는 UI입니다
-- NextJs 프로젝트를 구성하면 app dir에 기본적으로 존재하는 (global) layout.ts가 존재합니다
+- NextJs 프로젝트를 구성하면 app dir에 기본적으로 존재하는 (global) layout.tsx가 존재합니다
   - 해당 layout은 앱 전체에 걸쳐서 공유되는 레이아웃입니다
   - Root Layout에서는 반드시 <html> 태그와 <body> 태그를 포함해야 합니다.
   - Root Layout에서 <head> 태그(예: <title>, <meta> 등)를 직접 추가하지 말아야 합니다.
@@ -91,3 +91,13 @@ export default function DashboardPage() {
 | app/blog/[...slug]/layout.js    | /blog/1/2    | { slug: ['1', '2'] }    |
 
 - 이는 해당 Example처럼의 경로에서 layout에서 params들이 어떻게 찍히는지에 대한 예시입니다
+
+#### layout.tsx는 searchParams, pathname을 받지 못합니다
+
+- layout.tsx는 page.ts와 달리 props로 searchParams를 받지 못합니다
+
+  - 왜냐하면 layout은 여러 페이지 (여러 url)에 공유될 수 있고, 이러한 layout은 성능을 위해 페이지 이동에 따라 재렌더링 하지 않습니다.
+  - 이러면 발생하는 문제가 A 페이지에 대한 searchParam을 layout에서 가지고 있다가 B 페이지로 전환하여 새로운 searchParam으로 바뀌어도, layout은 재렌더링되지 않기 때문에 여전히 이전 searchParam을 가지고있는다는 문제가 존재합니다.
+  - 따라서 layout.tsx에는 props로 searchParams를 받지 않습니다
+
+- 같은 이유로 pathname도 layout에서 접근 할 수 없습니다
