@@ -7,11 +7,11 @@
 - layout 파일은 해당 경로(폴더)에 공유되는 UI입니다
 - NextJs 프로젝트를 구성하면 app dir에 기본적으로 존재하는 (global) layout.tsx가 존재합니다
   - 해당 layout은 앱 전체에 걸쳐서 공유되는 레이아웃입니다
-  - Root Layout에서는 반드시 <html> 태그와 <body> 태그를 포함해야 합니다.
-  - Root Layout에서 <head> 태그(예: <title>, <meta> 등)를 직접 추가하지 말아야 합니다.
+  - Root Layout에서는 반드시 `<html>` 태그와 `<body>` 태그를 포함해야 합니다.
+  - Root Layout에서 `<head>` 태그(예: `<title>`, `<meta>` 등)를 직접 추가하지 말아야 합니다.
     - 대신 Metadata API를 사용하여 이러한 메타데이터를 관리하는 것이 권장됩니다.
     - Metadata API를 사용하면 아래와 같은 이점이 생깁니다
-      1. 중복 제거: 여러 컴포넌트에서 <title>이나 <meta> 태그를 정의할 경우, Next.js는 이를 자동으로 관리하고 중복된 태그를 제거합니다.
+      1. 중복 제거: 여러 컴포넌트에서 `<title>`이나 `<meta>` 태그를 정의할 경우, Next.js는 이를 자동으로 관리하고 중복된 태그를 제거합니다.
       2. 스트리밍: 페이지가 로드될 때, 메타데이터가 효율적으로 스트리밍되어 초기 페이지 로딩 속도가 향상됩니다.
 
 #### props
@@ -82,7 +82,7 @@ export default function DashboardPage() {
 
 - 정리하면: Layout 컴포넌트는 그 경로의 "틀"을 제공하고, children은 그 틀 안에 들어가는 내용물(하위 페이지나 컴포넌트)을 제공합니다.
 
-2. parmas (optional)
+2. params (optional)
 
 | Example                         | URL          | params                  |
 | ------------------------------- | ------------ | ----------------------- |
@@ -101,3 +101,49 @@ export default function DashboardPage() {
   - 따라서 layout.tsx에는 props로 searchParams를 받지 않습니다
 
 - 같은 이유로 pathname도 layout에서 접근 할 수 없습니다
+
+### 2. page.tsx
+
+- page.tsx는 폴더 라우팅에서 해당 라우터의 고유한 UI 컴포넌트입니다
+
+#### props
+
+1. params
+
+| Example                         | URL          | params                  |
+| ------------------------------- | ------------ | ----------------------- |
+| app/dashboard/[team]/layout.js  | /dashboard/1 | { team: '1' }           |
+| app/shop/[tag]/[item]/layout.js | /shop/1/2    | { tag: '1', item: '2' } |
+| app/blog/[...slug]/layout.js    | /blog/1/2    | { slug: ['1', '2'] }    |
+
+- 이는 해당 Example처럼의 경로에서 page에서 params들이 어떻게 찍히는지에 대한 예시입니다
+
+2. searchParams
+
+| URL           | searchParams       |
+| ------------- | ------------------ |
+| /shop?a=1     | { a: '1' }         |
+| /shop?a=1&b=2 | { a: '1', b: '2' } |
+| /shop?a=1&a=2 | { a: ['1', '2'] }  |
+
+- 이는 해당 URL처럼의 경로에서 page에서 searchParams들이 어떻게 찍히는지에 대한 예시입니다
+- searchParams는 값을 미리 알 수 없는 동적 API이기 때문에, 해당 값을 사용하면 정적 렌더링이 아닌, 동적 렌더링으로 선택됩니다
+- searchParams는 일반 js 객체를 반환합니다
+
+### 3. loading.tsx
+
+### 4. not-found.tsx
+
+- not-found 파일은 경로 세그먼트 내에서 `notFound()` 함수가 `throw` 될때 UI를 렌더링하는 데 사용됩니다.
+- 사용자 지정 UI를 제공하는 것과 함께 Next.js는 스트리밍된 응답의 경우 200 HTTP 상태 코드를 반환하고 스트리밍되지 않은 응답의 경우 404를 반환합니다.
+
+  - 스트리밍 기능을 사용하는 컴포넌트에서 `notFound()`가 던져질 경우 => 200
+  - 스트리밍 기능을 사용하지 않는 컴포넌트에서 `notFound()`가 던져지거나, 아예 없는 페이지일 경우 => 404
+
+- 루트 app/not-found.js 파일은 `throw`된 `notFound()` 오류를 포착하는 것 외에도, 전체 애플리케이션의 일치하지 않는 URL도 처리합니다.
+
+  - 즉, 앱에서 처리하지 않는 URL을 방문하는 사용자에게는 app/not-found.js 파일에서 내보낸 UI가 표시됩니다.
+
+- 기본적으로 not-found는 서버 컴포넌트입니다.
+
+### 5. error.tsx
