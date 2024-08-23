@@ -12,6 +12,7 @@ async function Content() {
 }
 
 export default function LoadingPage() {
+  throw new Error("서버 컴포넌트 에러입니다");
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-lg">기본 텍스트</h1>
